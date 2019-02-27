@@ -1,0 +1,4 @@
+set m operating
+set n system
+print m
+print n

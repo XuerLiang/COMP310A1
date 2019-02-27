@@ -1,0 +1,4 @@
+set a computer
+set b science
+print a
+print b
