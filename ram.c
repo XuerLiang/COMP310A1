@@ -1,73 +1,35 @@
-#include<stdlib.h>
-#include<stdio.h>
-#include <string.h>
+#include <stdio.h>
 
-#include "pcb.h"
-#include "cpu.h"
-
-typedef struct readyqueue{
-        pcb* head;
-        pcb* tail;
-}readyQueue;
+// Global data structures representing hardware
+//
 
 FILE *ram[10];
-int ramPointer = 0;
-readyQueue rq;
 
-int loadToRam(FILE *fp){
-        ram[ramPointer] = fp;
-        ramPointer++;
-        //printf("ramPointer %d \n",ramPointer);
+// Data structure management functions
+//
+
+void initRAM() {
+	int i;
+
+	for(i=0; i<10; i++) ram[i] = NULL;
 }
 
-void createPCB(){
-        for(int i = 0; i < ramPointer; i++){
-                FILE *pcbPointer = ram[i];
-                pcb *p = (pcb *)malloc(sizeof(pcb));
-                p->PC = pcbPointer;
-                p->next = NULL;
-                p->ramIndex = i;
-                if(rq.head == NULL){
-                        rq.head = p;
-                }else if(i == 1){
-                        rq.head->next = p;
-                        rq.tail = p;
-                }else{
-                        rq.tail->next = p;
-                        rq.tail = p;
-                }
-        }
-}
+int addToRAM(FILE *p) {
+	int i;
 
+	if (p == NULL) return -1; // error 
+	
+	for(i=0; i<10 && ram[i]!=NULL; i++); // find next available space
 
-int runProgram(){
-        createPCB();
-        int errcode = 0;
-        while(rq.head != NULL){
-                pcb *a = rq.head;
-                errcode = runPCB(a);
-                if(errcode == -1){
-                        int index = a->ramIndex;
-                        rq.head = a->next;
-                        a->next = NULL;
-                        fclose(ram[index]);
-                        ram[index] = NULL;
-                        ramPointer--;
-                        //printf("ramPointer after decrement %d\n",ramPointer);
-                        if(ramPointer == 1) return runPCBspecial(rq.head);
-                }else{
-                        rq.head = a->next;
-                        (rq.tail)->next = a;
-                        rq.tail = a;
-                        a->next = NULL;
-                }
-        }
-	for(int i = 0; i < 3; i++){
-		ram[i] = NULL;
+	if (i<10) {
+		ram[i] = p;
+		return i; // position in RAM
 	}
-	ramPointer = 0;
-	rq.head = NULL;
-	rq.tail = NULL;
-        return 0;
+	else
+		return -2; // out of memory error
+}
+
+void clearRAM(int startAddressRAM) {
+	ram[startAddressRAM] = NULL;
 }
 

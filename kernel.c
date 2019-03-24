@@ -1,29 +1,63 @@
 #include<stdlib.h>
 #include<stdio.h>
-#include <string.h>
 
-#include "shellmemory.h"
-#include "interpreter.h"
 #include "shell.h"
+#include "ram.h"
+#include "cpu.h"
+#include "pcb.h"
 
-char prompt[100] = {'$', '\0'};  // prompts can be modified
-char userInput[1000]; // user's input stored here
+int myinit(FILE *p) {
+	PCB *pcb;
+	int result;
 
+	result = addToRAM(p);
 
-int main(int argc, char *argv[]) {
-  
-  printf("Kernel 1.0 loaded!");
-  printf("Welcome to the %s shell!\n", "Xuer Liang");
-  printf("Shell Version 2.0 Updated February 2019\n");
-  
-  printf("%s ", prompt);
-  while(fgets(userInput, 999, stdin)) {
-    // limit input to array size
-    
-    int errorCode = parse(userInput);
-    if (errorCode == -1) exit(0); // ignore all other errors
-    printf("%s ", prompt);
-  }
+	if (result>=0) {
+		pcb = makePCB(p,result);
+		if (pcb != NULL) {
+			addToReady(pcb);
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
+void terminate(PCB *p) {
+	clearRAM(p->start);
+	free(p);
+}
 
+void scheduler() {
+	PCB *pcb;
+	int result;
+
+	// initialize CPU
+	initCPU();
+
+	// execute the processes
+	while(getHead() != NULL) {
+		// printPCB(); // for debugging
+
+		pcb = getFromReady();
+
+		if (pcb != NULL) {
+			setCPU(pcb->PC);
+			result = runCPU(2);
+
+			if (result == 99) terminate(pcb);
+			else addToReady(pcb);
+		} 	
+	}
+}
+
+int main() {
+	int result = 0;
+	
+	initRAM();
+	initCPU();
+
+	result = shell();
+
+	return result;
+}

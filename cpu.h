@@ -1,2 +1,3 @@
-int runPCB(pcb* p);
-int runPCBspecial(pcb* p);
+void initCPU();
+void setCPU(FILE *PC);
+int runCPU(int quanta);

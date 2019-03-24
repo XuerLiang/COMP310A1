@@ -1,43 +1,45 @@
-#include<stdlib.h>
-#include<stdio.h>
-#include <string.h>
+#include <stdio.h>
 
 #include "shell.h"
-#include "pcb.h"
 
-typedef struct cipiu{
+// Global data structures simulating hardware
+//
+
+struct CPU {
 	FILE *IP;
 	char IR[1000];
-}cpu;
+	int quanta;
+} cpu;
 
-cpu CPU;
-
-int runPCB(pcb* p) {
-	CPU.IP = p->PC;
-        if(feof(CPU.IP)) return -1;
-        //run line 1
-	int errCode = 0;
-        fgets(CPU.IR, 999, CPU.IP);
-	//printf("exec line1 %s\n",CPU.IR);
-        errCode = parse(CPU.IR);
-	//run line 2
-        if(feof(CPU.IP)) return -1;
-        fgets(CPU.IR, 999, CPU.IP);
-	//printf("exec line1 %s\n",CPU.IR);
-        errCode = parse(CPU.IR);
-		
-        if(feof(CPU.IP)) return -1;
-        return errCode;
+void initCPU() {
+	cpu.quanta = 2;
+	cpu.IP     = NULL;
+	cpu.IR[0]  = '\0';
 }
 
-int runPCBspecial(pcb* p){
-	CPU.IP = p->PC;
-        int errCode = 0;
-        while(!feof(CPU.IP)) {
-                fgets(CPU.IR, 999, CPU.IP);
-		//printf("exec special %s\n",CPU.IR);
-                errCode = parse(CPU.IR);
-                if (errCode != 0) break;
-        }
-        return errCode;
+void setCPU(FILE *PC) {
+	cpu.IP    = PC;
+	cpu.IR[0] = '\0';
+}
+
+int runCPU(int quanta) {
+	int result;
+	char *p;
+
+	cpu.quanta = quanta;
+
+	while(cpu.quanta > 0) {
+		p = fgets(cpu.IR, 999, cpu.IP);
+
+		if (p == NULL || feof(cpu.IP)) return 99; // end of program
+
+		// printf(">>>%s\n",cpu.IR); // debug code
+
+		result = prompt(cpu.IR);
+		if (result != 0) return result;
+
+		cpu.quanta--;
+	}	
+
+	return 0; // no errors
 }

@@ -1,0 +1,8 @@
+set m operating
+set n system
+print m
+print n
+set h add
+set k minus
+print h
+print k

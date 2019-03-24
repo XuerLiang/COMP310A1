@@ -1,0 +1,8 @@
+set x hello
+set y world
+print x
+print y
+set c hi
+set d earth
+print c
+print d
