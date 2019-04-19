@@ -94,10 +94,6 @@ int prompt(char buffer[]) {
 	if (result ==  3) printf("Run is  missing filename\n");
 	if (result ==  4) printf("Script filename not found\n");
 	if (result ==  5) printf("The exec progam was not found\n");
-	if (result ==  6) printf("The mount progam was not found\n");
-	if (result ==  7) printf("The write progam was not found\n");
-	if (result ==  8) printf("The read progam was not found\n");
-	if (result ==  -1) printf("Error processing command\n");
 
 	return 0;
 }
@@ -109,7 +105,7 @@ int shell() {
 	initShellMemory();
 
 	printf("Welcome to the Xuer Liang shell!\n");
-	printf("Shell Version 4.0 Updated April 2019\n");
+	printf("Shell Version 2.0 Updated February 2019\n");
 
 	while(!done) {
 		printf("$ ");
@@ -124,5 +120,4 @@ int shell() {
 
 	return 0;
 }
-
 

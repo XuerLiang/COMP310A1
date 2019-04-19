@@ -36,6 +36,7 @@ int mount_command(char *partitionName, char *number_of_blocks, char *block_size)
 	int blocksize = atoi(block_size);
 	partitionfn(partitionName, blocksize, numblocks);
 	mount(partitionName);
+	return 0;
 }
 
 int write_command(char *filename, char *words){
@@ -51,6 +52,7 @@ int write_command(char *filename, char *words){
 	}
 	char *arg = copy;
 	writeBlock(index, arg);
+	return 0;
 }
 
 int read_command(char *filename, char *variable){
